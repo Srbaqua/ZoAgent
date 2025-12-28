@@ -1,15 +1,16 @@
 "use client"
 
-import { useAccount } from "wagmi"
+import { useConnection } from "wagmi"
 import { useEffect, useState } from "react"
 
 import { WalletButton } from "@/components/WalletButton"
 import { OnboardingForm } from "@/components/Onboardingform"
 import { OnboardingData } from "@/lib/onboarding-schema"
 import { isMetaMaskInstalled } from "@/lib/wallet"
+import { Dashboard } from "@/components/Dashboard"
 
 export default function Home() {
-  const { address, isConnected } = useAccount()
+  const { address, isConnected } = useConnection()
 
   const [mounted, setMounted] = useState(false)
   const [profile, setProfile] = useState<OnboardingData | null>(null)
@@ -85,18 +86,9 @@ export default function Home() {
 
   /* 5️⃣ Connected + profile exists */
   return (
-    <main className="min-h-screen flex items-center justify-center">
-      <div className="text-center space-y-2">
-        <h1 className="text-xl font-semibold">
-          Welcome, {profile.name}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Wallet: {address?.slice(0, 6)}…{address?.slice(-4)}
-        </p>
-        <p className="text-muted-foreground">
-          Agent is tracking your Zo journey.
-        </p>
-      </div>
-    </main>
-  )
+  <main className="min-h-screen flex items-center justify-center p-6">
+    <Dashboard profile={profile} />
+  </main>
+)
+
 }
