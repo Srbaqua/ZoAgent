@@ -40,6 +40,8 @@ export function OnboardingForm({
         <Input placeholder="Skills" {...form.register("skills")} />
         <Input placeholder="Interests" {...form.register("interests")} />
         <Input placeholder="Zo House (BLRxZo / SFOxZo / Remote)" {...form.register("zoHouse")} />
+        <p>{address}</p>
+
 
         <Button
           className="w-full"
