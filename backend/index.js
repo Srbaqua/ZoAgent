@@ -3,6 +3,7 @@ import cors from "cors"
 import bodyParser from "body-parser"
 import dotenv from "dotenv"
 import { generateRecommendations } from "./agent.js"
+import cron from "node-cron"
 
 dotenv.config()
 
@@ -18,7 +19,19 @@ app.post("/profile", (req, res) => {
   res.json({ success: true })
 })
 const recommendations = new Map()
+cron.schedule("*/5 * * * *", async () => {
+  console.log(" Agent loop running...")
 
+  for (const [wallet, profile] of profiles.entries()) {
+    try {
+      const recs = await generateRecommendations(profile)
+      recommendations.set(wallet, recs)
+      console.log(` Updated recommendations for ${wallet}`)
+    } catch (err) {
+      console.error(` Agent failed for ${wallet}`)
+    }
+  }
+})
 
 app.get("/profile/:wallet", (req, res) => {
   const profile = profiles.get(req.params.wallet)
@@ -49,6 +62,7 @@ app.get("/agent/:wallet", (req, res) => {
   const recs = recommendations.get(req.params.wallet)
   res.json(recs || null)
 })
+
 
 
 app.listen(4000, () => {
