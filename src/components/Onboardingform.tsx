@@ -1,19 +1,30 @@
-    "use client"
+"use client"
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { onboardingSchema, OnboardingData } from "@/lib/onboarding-schema"
+import { saveProfile } from "@/lib/api"
+import { useAccount } from "wagmi"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-export function OnboardingForm({ onComplete }: { onComplete: (d: OnboardingData) => void }) {
+export function OnboardingForm({
+  onComplete,
+}: {
+  onComplete: (d: OnboardingData) => void
+}) {
+  const { address } = useAccount()
+
   const form = useForm<OnboardingData>({
     resolver: zodResolver(onboardingSchema),
   })
 
-  function onSubmit(data: OnboardingData) {
+  async function onSubmit(data: OnboardingData) {
+    if (!address) return
+
+    await saveProfile(address, data)
     onComplete(data)
   }
 
@@ -25,12 +36,15 @@ export function OnboardingForm({ onComplete }: { onComplete: (d: OnboardingData)
 
       <CardContent className="space-y-4">
         <Input placeholder="Name" {...form.register("name")} />
-        <Input placeholder="Role (Developer, Researcher…)" {...form.register("role")} />
-        <Input placeholder="Skills (Solidity, AI, Rust…)" {...form.register("skills")} />
-        <Input placeholder="Interests (DeFi, DeSci…)" {...form.register("interests")} />
+        <Input placeholder="Role" {...form.register("role")} />
+        <Input placeholder="Skills" {...form.register("skills")} />
+        <Input placeholder="Interests" {...form.register("interests")} />
         <Input placeholder="Zo House (BLRxZo / SFOxZo / Remote)" {...form.register("zoHouse")} />
 
-        <Button className="w-full" onClick={form.handleSubmit(onSubmit)}>
+        <Button
+          className="w-full"
+          onClick={form.handleSubmit(onSubmit)}
+        >
           Complete Onboarding
         </Button>
       </CardContent>

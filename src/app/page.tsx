@@ -1,15 +1,25 @@
 "use client"
 
-import { useAccount } from "wagmi"
-import { useState } from "react"
+import { useConnection } from "wagmi"
+import { useEffect, useState } from "react"
 
 import { WalletButton } from "@/components/WalletButton"
 import { OnboardingForm } from "@/components/Onboardingform"
 import { OnboardingData } from "@/lib/onboarding-schema"
 
 export default function Home() {
-  const { isConnected } = useAccount()
+  const { isConnected } = useConnection()
+  const [mounted, setMounted] = useState(false)
   const [profile, setProfile] = useState<OnboardingData | null>(null)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // ⛔ Prevent hydration mismatch
+  if (!mounted) {
+    return null
+  }
 
   if (!isConnected) {
     return (
