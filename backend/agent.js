@@ -8,7 +8,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" })
 
 export async function generateRecommendations(profile) {
   const prompt = `
-You are an AI agent for Zo World.
+You are an autonomous AI agent operating inside Zo World.
 
 Builder profile:
 Name: ${profile.name}
@@ -17,12 +17,23 @@ Skills: ${profile.skills}
 Interests: ${profile.interests}
 Zo House: ${profile.zoHouse}
 
-Task:
-1. Suggest 2 collaboration ideas inside Zo World
-2. Suggest 1 suitable bounty type
-3. Suggest 1 Zo House activity
+Context:
+Zo Houses are physical + cultural hubs.
+BLRxZo focuses on early-stage builders and experimentation.
+SFOxZo focuses on scaling, founders, and investors.
+WTFxZo focuses on creative tech, media, and culture.
 
-Respond ONLY in valid JSON with this structure:
+Your task:
+1. Suggest 2 HIGH-VALUE collaboration ideas that make sense specifically for ${profile.zoHouse}
+2. Suggest 1 bounty or initiative relevant to that Zo House
+3. Suggest 1 concrete action the builder should take THIS WEEK inside Zo World
+
+Rules:
+- Be practical, not generic
+- Use Zo House context explicitly
+- Respond in JSON only
+
+JSON format:
 {
   "collaborations": [],
   "bounty": "",

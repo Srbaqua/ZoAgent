@@ -3,6 +3,8 @@ import cors from "cors"
 import bodyParser from "body-parser"
 import dotenv from "dotenv"
 import cron from "node-cron"
+import "./telegramBot.js"
+
 
 import { generateRecommendations } from "./agent.js"
 import { writeReputationOnChain } from "./onchain.js"
@@ -139,6 +141,7 @@ app.get("/profile/:wallet", (req, res) => {
 app.get("/agent/:wallet", (req, res) => {
   res.json(recommendations.get(req.params.wallet) || null)
 })
+export { profiles, recommendations }
 
 app.listen(4000, () => {
   console.log("Backend running on http://localhost:4000")
