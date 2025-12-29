@@ -123,3 +123,8 @@
     @apply bg-background text-foreground;
   }
 }
+/* Improve card contrast on dark background */
+.dark .bg-card {
+  background-color: oklch(0.18 0.04 265);
+}
+

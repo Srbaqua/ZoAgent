@@ -1,16 +1,19 @@
 "use client"
 
-import { useConnection } from "wagmi"
 import { useEffect, useState } from "react"
+import { useAccount } from "wagmi"
 
 import { WalletButton } from "@/components/WalletButton"
 import { OnboardingForm } from "@/components/Onboardingform"
+import { Dashboard } from "@/components/Dashboard"
+import { Header } from "@/components/Header"
+import { Shell } from "@/components/Shell"
+
 import { OnboardingData } from "@/lib/onboarding-schema"
 import { isMetaMaskInstalled } from "@/lib/wallet"
-import { Dashboard } from "@/components/Dashboard"
 
-export default function Home() {
-  const { address, isConnected } = useConnection()
+export default function Page() {
+  const { address, isConnected } = useAccount()
 
   const [mounted, setMounted] = useState(false)
   const [profile, setProfile] = useState<OnboardingData | null>(null)
@@ -34,9 +37,10 @@ export default function Home() {
       .finally(() => setLoadingProfile(false))
   }, [address])
 
+  // Prevent hydration issues
   if (!mounted) return null
 
-  /* 1️⃣ MetaMask not installed */
+  /* 🚫 MetaMask missing */
   if (!isMetaMaskInstalled()) {
     return (
       <main className="min-h-screen flex items-center justify-center text-center">
@@ -57,38 +61,37 @@ export default function Home() {
     )
   }
 
-  /* 2️⃣ Wallet not connected */
-  if (!isConnected) {
-    return (
-      <main className="min-h-screen flex items-center justify-center">
-        <WalletButton />
-      </main>
-    )
-  }
-
-  /* 3️⃣ Loading profile */
-  if (loadingProfile) {
-    return (
-      <main className="min-h-screen flex items-center justify-center">
-        <p>Loading profile…</p>
-      </main>
-    )
-  }
-
-  /* 4️⃣ Connected but no profile */
-  if (!profile) {
-    return (
-      <main className="min-h-screen flex items-center justify-center">
-        <OnboardingForm onComplete={setProfile} />
-      </main>
-    )
-  }
-
-  /* 5️⃣ Connected + profile exists */
   return (
-  <main className="min-h-screen flex items-center justify-center p-6">
-    <Dashboard profile={profile} />
-  </main>
-)
+    <Shell>
+      <Header />
 
+      {/* 🔌 Wallet not connected */}
+      {!isConnected && (
+        <div className="flex justify-center mt-12">
+          <WalletButton />
+        </div>
+      )}
+
+      {/* ⏳ Loading profile */}
+      {isConnected && loadingProfile && (
+        <p className="text-center text-zinc-400 mt-12">
+          Loading profile…
+        </p>
+      )}
+
+      {/* 📝 Onboarding */}
+      {isConnected && !loadingProfile && !profile && (
+        <div className="flex justify-center mt-12">
+          <OnboardingForm onComplete={setProfile} />
+        </div>
+      )}
+
+      {/* 📊 Dashboard */}
+      {isConnected && profile && (
+        <div className="mt-10">
+          <Dashboard profile={profile} />
+        </div>
+      )}
+    </Shell>
+  )
 }
